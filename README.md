@@ -1,4 +1,4 @@
-# 🔗 QR ETERNAL# React + TypeScript + Vite
+# 🔗QR ETERNAL# React + TypeScript + Vite
 
 
 
@@ -6,27 +6,27 @@
 
 
 
-## ✨ FonctionnalitésCurrently, two official plugins are available:
+##  FonctionnalitésCurrently, two official plugins are available:
 
 
 
-- 🚀 **Génération instantanée** : QR codes générés en temps réel- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+-  **Génération instantanée** : QR codes générés en temps réel- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
 
-- 🎨 **Interface moderne** : Design élégant avec gradient cyan/purple sur fond noir- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-  **Interface moderne** : Design élégant avec gradient cyan/purple sur fond noir- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- 📱 **Responsive** : Fonctionne parfaitement sur mobile et desktop
+-  **Responsive** : Fonctionne parfaitement sur mobile et desktop
 
-- 💾 **Export multiple** : Téléchargement en PNG et SVG haute qualité## React Compiler
+-  **Export multiple** : Téléchargement en PNG et SVG haute qualité## React Compiler
 
-- 🔧 **Niveau H** : Correction d'erreur maximale pour une meilleure résistance
+-  **Niveau H** : Correction d'erreur maximale pour une meilleure résistance
 
-- ⚡ **Client-side** : Aucun serveur, fonctionne entièrement côté clientThe React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-  **Client-side** : Aucun serveur, fonctionne entièrement côté clientThe React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- ♾️ **Aucune limite** : Génération illimitée, pas de tracking, pas de compte
+-  **Aucune limite** : Génération illimitée, pas de tracking, pas de compte
 
 ## Expanding the ESLint configuration
 
-## 🛠️ Technologies
+##  Technologies
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
@@ -42,7 +42,7 @@ If you are developing a production application, we recommend updating the config
 
     files: ['**/*.{ts,tsx}'],
 
-## 🚀 Démarrage rapide    extends: [
+##  Démarrage rapide    extends: [
 
       // Other configs...
 
@@ -86,7 +86,7 @@ L'application présente :        tsconfigRootDir: import.meta.dirname,
 
 ```
 
-## 🌟 Caractéristiques techniques
+##  Caractéristiques techniques
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
@@ -102,7 +102,7 @@ You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-re
 
 
 
-## 📝 Utilisationexport default defineConfig([
+##  Utilisationexport default defineConfig([
 
   globalIgnores(['dist']),
 
@@ -112,11 +112,11 @@ You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-re
 
 3. Cliquer sur PNG ou SVG pour télécharger    extends: [
 
-4. C'est tout ! 🎉      // Other configs...
+4. C'est tout !       // Other configs...
 
       // Enable lint rules for React
 
-## 🎯 Philosophie      reactX.configs['recommended-typescript'],
+##  Philosophie      reactX.configs['recommended-typescript'],
 
       // Enable lint rules for React DOM
 
@@ -136,7 +136,7 @@ You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-re
 
       // other options...
 
-Fait avec ❤️ par un développeur qui en avait marre des générateurs limités.    },
+Fait avec  par un développeur qui en avait marre des générateurs limités.    },
   },
 ])
 ```
