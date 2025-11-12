@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
 
 export default function QRGenerator() {
-  const [text, setText] = useState("https://qreternal.dev");
+  const [text, setText] = useState("https://qr-generator-steel-beta.vercel.app/");
   const [foregroundColor, setForegroundColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   
