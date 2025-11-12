@@ -30,7 +30,7 @@ export default function QRGenerator() {
         },
       });
 
-      // Ajout le logo kichoto.png
+      // Ajouter le logo kichoto.png
       qrCode.current.update({
         image: "/kichoto.png"
       });
@@ -47,7 +47,7 @@ export default function QRGenerator() {
     if (qrCode.current) {
       qrCode.current.update({ 
         data: text,
-        image: "/kichoto.svg",
+        image: "/kichoto.png",
         dotsOptions: { type: "rounded", color: foregroundColor },
         backgroundOptions: { color: backgroundColor },
         cornersSquareOptions: { type: "square", color: foregroundColor },
