@@ -30,9 +30,9 @@ export default function QRGenerator() {
         },
       });
 
-      // Ajouter le logo kichoto.svg
+      // Ajout le logo kichoto.png
       qrCode.current.update({
-        image: "/kichoto.svg"
+        image: "/kichoto.png"
       });
 
       if (ref.current) {
