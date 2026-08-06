@@ -5,9 +5,34 @@ export default function QRGenerator() {
   const [text, setText] = useState("https://qr-generator-steel-beta.vercel.app/");
   const [foregroundColor, setForegroundColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
-  
+  const [logoImage, setLogoImage] = useState("/kichoto.png");
+
   const ref = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext("2d")?.drawImage(img, 0, 0);
+        setLogoImage(canvas.toDataURL("image/png"));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const resetLogo = () => {
+    setLogoImage("/kichoto.png");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   // Initial setup
   useEffect(() => {
@@ -30,9 +55,9 @@ export default function QRGenerator() {
         },
       });
 
-      // Ajouter le logo kichoto.png
+      // Ajouter le logo par défaut
       qrCode.current.update({
-        image: "/kichoto.png"
+        image: logoImage
       });
 
       if (ref.current) {
@@ -45,19 +70,18 @@ export default function QRGenerator() {
   // Update when text or colors change
   useEffect(() => {
     if (qrCode.current) {
-      qrCode.current.update({ 
+      qrCode.current.update({
         data: text,
-        image: "/kichoto.png",
+        image: logoImage,
         dotsOptions: { type: "rounded", color: foregroundColor },
         backgroundOptions: { color: backgroundColor },
         cornersSquareOptions: { type: "square", color: foregroundColor },
         cornersDotOptions: { type: "square", color: foregroundColor }
       });
     }
-  }, [text, foregroundColor, backgroundColor]);
+  }, [text, foregroundColor, backgroundColor, logoImage]);
 
   const downloadPNG = () => qrCode.current?.download({ name: "qreternal", extension: "png" });
-  const downloadSVG = () => qrCode.current?.download({ name: "qreternal", extension: "svg" });
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans card">
@@ -78,7 +102,7 @@ export default function QRGenerator() {
           {/* URL Input */}
           <div className="mb-8 text-center">`
             <label className="block text-sm font-medium text-gray-700 mb-2 font-p">
-              Entrez l'URL de votre site web
+              Entrez votre URL
             </label>
             <input
               type="text"
@@ -110,6 +134,36 @@ export default function QRGenerator() {
             </button>
           </div>
 
+          {/* Logo Upload */}
+          <div className="mb-8 text-center">
+            <label className="block text-sm font-medium text-gray-700 mb-2 font-p">
+              Logo au centre du QR Code
+            </label>
+            <div className="flex gap-3 justify-center items-center">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                Choisir une image
+              </button>
+              {logoImage !== "/kichoto.png" && (
+                <button
+                  onClick={resetLogo}
+                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Réinitialiser
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
+
           {/* QR Code Preview */}
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Aperçu en temps réel</h2>
@@ -118,19 +172,13 @@ export default function QRGenerator() {
               <div ref={ref} className="flex justify-center" />
             </div>
 
-            {/* Download Buttons under QR code */}
+            {/* Download Button under QR code */}
             <div className="flex gap-3 justify-center">
-              <button 
-                onClick={downloadPNG} 
+              <button
+                onClick={downloadPNG}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
                 Télécharger PNG
-              </button>
-              <button 
-                onClick={downloadSVG} 
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
-              >
-                Télécharger SVG
               </button>
             </div>
           </div>
