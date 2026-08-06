@@ -38,19 +38,19 @@ export default function QRGenerator() {
   useEffect(() => {
     if (!qrCode.current) {
       qrCode.current = new QRCodeStyling({
-        width: 280,
-        height: 280,
+        width: 1000,
+        height: 1000,
         data: text,
-        margin: 10,
+        margin: 36,
         qrOptions: { errorCorrectionLevel: "H" },
         dotsOptions: { type: "rounded", color: foregroundColor },
         backgroundOptions: { color: backgroundColor },
         cornersSquareOptions: { type: "square", color: foregroundColor },
         cornersDotOptions: { type: "square", color: foregroundColor },
-        imageOptions: { 
-          hideBackgroundDots: true, 
-          imageSize: 0.3, 
-          margin: 8,
+        imageOptions: {
+          hideBackgroundDots: true,
+          imageSize: 0.3,
+          margin: 28,
           crossOrigin: "anonymous"
         },
       });
@@ -169,8 +169,12 @@ export default function QRGenerator() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Aperçu en temps réel</h2>
             
             <div className="bg-gray-50 rounded-xl p-8 mb-6 inline-block">
-              <div ref={ref} className="flex justify-center" />
+              <div
+                ref={ref}
+                className="flex justify-center w-[280px] h-[280px] [&>canvas]:w-full [&>canvas]:h-full [&>svg]:w-full [&>svg]:h-full"
+              />
             </div>
+            <p className="text-xs text-gray-400 mb-2">Export haute résolution (1000x1000px) prêt pour l'impression</p>
 
             {/* Download Button under QR code */}
             <div className="flex gap-3 justify-center">
