@@ -29,7 +29,7 @@ export const kv = isKvConfigured()
   ? {
       async get<T>(key: string): Promise<T | null> {
         const client = await getClient();
-        const raw = await client.get(key);
+        const raw = (await client.get(key)) as string | null;
         return raw ? (JSON.parse(raw) as T) : null;
       },
       async set(key: string, value: unknown): Promise<void> {
