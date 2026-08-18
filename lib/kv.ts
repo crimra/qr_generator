@@ -1,10 +1,44 @@
-import { Redis } from "@upstash/redis";
+import { createClient } from "redis";
 
-const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
+const redisUrl = process.env.KV_URL ?? process.env.REDIS_URL;
 
 export function isKvConfigured(): boolean {
-  return Boolean(url && token);
+  return Boolean(redisUrl);
 }
 
-export const kv = url && token ? new Redis({ url, token }) : null;
+async function connectClient() {
+  const client = createClient({ url: redisUrl! });
+  client.on("error", (err) => console.error("Redis client error", err));
+  await client.connect();
+  return client;
+}
+
+let clientPromise: ReturnType<typeof connectClient> | null = null;
+
+async function getClient() {
+  if (!redisUrl) throw new Error("Redis is not configured");
+  if (!clientPromise) {
+    clientPromise = connectClient();
+  }
+  const client = await clientPromise;
+  if (!client.isOpen) await client.connect();
+  return client;
+}
+
+export const kv = isKvConfigured()
+  ? {
+      async get<T>(key: string): Promise<T | null> {
+        const client = await getClient();
+        const raw = await client.get(key);
+        return raw ? (JSON.parse(raw) as T) : null;
+      },
+      async set(key: string, value: unknown): Promise<void> {
+        const client = await getClient();
+        await client.set(key, JSON.stringify(value));
+      },
+      async exists(key: string): Promise<boolean> {
+        const client = await getClient();
+        return (await client.exists(key)) === 1;
+      },
+    }
+  : null;
