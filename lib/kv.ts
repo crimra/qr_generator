@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 
-const redisUrl = process.env.KV_URL ?? process.env.REDIS_URL;
+const redisUrl = process.env.KV_REDIS_URL ?? process.env.KV_URL ?? process.env.REDIS_URL;
 
 export function isKvConfigured(): boolean {
   return Boolean(redisUrl);

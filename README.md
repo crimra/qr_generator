@@ -44,7 +44,7 @@ npm run build
 
 ### Configuration du stockage (Redis)
 
-1. Dashboard Vercel → projet → **Storage** → **Create Database** → intégration **Redis** (Marketplace), préfixe des variables réglé sur `KV` — connecter au projet (injecte automatiquement `KV_URL`, une chaîne de connexion Redis standard)
+1. Dashboard Vercel → projet → **Storage** → **Create Database** → intégration **Redis** (Marketplace), préfixe des variables réglé sur `KV` — connecter au projet (injecte automatiquement `KV_REDIS_URL`, une chaîne de connexion Redis standard)
 2. Redéployer pour que les nouvelles variables d'environnement soient prises en compte
 3. En local : `vercel link` puis `vercel env pull .env.local`, puis `vercel dev`
 
