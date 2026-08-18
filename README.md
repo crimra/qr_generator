@@ -1,142 +1,58 @@
-# 🔗QR ETERNAL# React + TypeScript + Vite
+# 🔗 QR ETERNAL
 
+> Générateur de QR codes intemporel, illimité et gratuit à vie
 
+## Fonctionnalités
 
-> Générateur de QR codes intemporel, illimité et gratuit à vieThis template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- **Génération instantanée** : QR codes générés en temps réel
+- **QR codes dynamiques** : le QR reste visuellement identique pour toujours, mais sa destination peut être modifiée après coup via un lien secret d'édition
+- **Interface moderne** : Design élégant, responsive
+- **Logo personnalisé** : upload d'une image centrale, convertie automatiquement en PNG
+- **Export haute résolution** : téléchargement PNG 1000×1000px, prêt pour l'impression
+- **Niveau H** : Correction d'erreur maximale pour une meilleure résistance
+- **Aucune limite** : Génération illimitée, pas de tracking, pas de compte
 
+## Technologies
 
+- **React 19** + **TypeScript** - Interface utilisateur
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling utilitaire
+- **qr-code-styling** - Génération de QR codes stylisés
+- **Vercel Serverless Functions** + **Upstash Redis** (via Vercel KV) - Stockage de la destination des QR codes dynamiques
 
-##  FonctionnalitésCurrently, two official plugins are available:
-
-
-
--  **Génération instantanée** : QR codes générés en temps réel- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-
--  **Interface moderne** : Design élégant avec gradient cyan/purple sur fond noir- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
--  **Responsive** : Fonctionne parfaitement sur mobile et desktop
-
--  **Export multiple** : Téléchargement en PNG et SVG haute qualité## React Compiler
-
--  **Niveau H** : Correction d'erreur maximale pour une meilleure résistance
-
--  **Client-side** : Aucun serveur, fonctionne entièrement côté clientThe React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
--  **Aucune limite** : Génération illimitée, pas de tracking, pas de compte
-
-## Expanding the ESLint configuration
-
-##  Technologies
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-- **React 19** + **TypeScript** - Interface utilisateur moderne
-
-- **Vite** - Build tool ultra-rapide```js
-
-- **Tailwind CSS** - Styling utilitaireexport default defineConfig([
-
-- **qr-code-styling** - Génération de QR codes stylisés  globalIgnores(['dist']),
-
-- **100% client-side** - Aucune dépendance serveur  {
-
-    files: ['**/*.{ts,tsx}'],
-
-##  Démarrage rapide    extends: [
-
-      // Other configs...
+## Démarrage rapide
 
 ```bash
+# Installation des dépendances
+npm install
 
-# Installation des dépendances      // Remove tseslint.configs.recommended and replace with this
-
-npm install      tseslint.configs.recommendedTypeChecked,
-
-      // Alternatively, use this for stricter rules
-
-# Lancement du serveur de développement      tseslint.configs.strictTypeChecked,
-
-npm run dev      // Optionally, add this for stylistic rules
-
-      tseslint.configs.stylisticTypeChecked,
+# Lancement du serveur de développement (frontend uniquement)
+npm run dev
 
 # Build de production
-
-npm run build      // Other configs...
-
-```    ],
-
-    languageOptions: {
-
-## 📸 Aperçu      parserOptions: {
-
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-
-L'application présente :        tsconfigRootDir: import.meta.dirname,
-
-- Un champ de saisie pour votre URL      },
-
-- Génération automatique du QR code      // other options...
-
-- Boutons de téléchargement PNG/SVG    },
-
-- Compteur de caractères en temps réel  },
-
-- Design dark mode par défaut])
-
+npm run build
 ```
 
-##  Caractéristiques techniques
+> `npm run dev` (Vite seul) ne sert que le frontend : la création/modification de QR codes dynamiques nécessite les fonctions serverless, donc `vercel dev` (voir plus bas) pour tester ce flux en local.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## QR codes dynamiques
 
-- **Niveau de correction H** : 30% du code peut être endommagé
+1. Coller votre lien dans le champ de saisie — un aperçu du style s'affiche en temps réel
+2. Cliquer sur **Créer mon QR code dynamique** : le QR encode désormais un lien court permanent (`/r/{id}`) et ne changera plus jamais visuellement
+3. Un **lien secret de modification** est affiché une seule fois — à sauvegarder, il permet de changer la destination plus tard sans toucher au QR
+4. Télécharger le PNG haute résolution
 
-- **Limite théorique** : 2953 caractères alphanumériques```js
+### Configuration du stockage (Vercel KV)
 
-- **Points arrondis** : Design moderne et esthétique// eslint.config.js
+1. Dashboard Vercel → projet → **Storage** → **Create Database** → **KV**, puis la connecter au projet (injecte automatiquement `KV_REST_API_URL` / `KV_REST_API_TOKEN`)
+2. Redéployer pour que les nouvelles variables d'environnement soient prises en compte
+3. En local : `vercel link` puis `vercel env pull .env.local`, puis `vercel dev`
 
-- **Marge optimisée** : Lecture facilitée par tous les scannersimport reactX from 'eslint-plugin-react-x'
+## Philosophie
 
-- **Performance** : Génération instantanée sans latenceimport reactDom from 'eslint-plugin-react-dom'
-
-
-
-##  Utilisationexport default defineConfig([
-
-  globalIgnores(['dist']),
-
-1. Coller votre lien dans le champ de saisie  {
-
-2. Le QR code se génère automatiquement    files: ['**/*.{ts,tsx}'],
-
-3. Cliquer sur PNG ou SVG pour télécharger    extends: [
-
-4. C'est tout !       // Other configs...
-
-      // Enable lint rules for React
-
-##  Philosophie      reactX.configs['recommended-typescript'],
-
-      // Enable lint rules for React DOM
-
-**QR ETERNAL** suit une philosophie simple :      reactDom.configs.recommended,
-
-- **Intemporel** : Pas de mode, pas d'obsolescence    ],
-
-- **Illimité** : Aucune restriction d'usage    languageOptions: {
-
-- **Gratuit** : Vraiment gratuit, pour toujours      parserOptions: {
-
-- **Respect** : Aucun tracking, aucune donnée collectée        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-
-        tsconfigRootDir: import.meta.dirname,
-
----      },
-
-      // other options...
-
-Fait avec  par un développeur qui en avait marre des générateurs limités.    },
-  },
-])
-```
+**QR ETERNAL** suit une philosophie simple :
+- **Intemporel** : le QR imprimé ne devient jamais obsolète
+- **Illimité** : Aucune restriction d'usage
+- **Gratuit** : Vraiment gratuit, pour toujours
+- **Respect** : Aucun tracking, aucune donnée collectée en dehors de la destination du QR code lui-même
+- **Sans compte** : la modification d'un QR dynamique repose sur un lien secret, pas sur un login

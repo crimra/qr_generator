@@ -1,11 +1,21 @@
 import { useRef, useEffect, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
+import { createDynamicQr } from "../lib/api";
+import { isValidDestinationUrl } from "../lib/validateUrl";
+import type { CreateQrResponse } from "../../shared/api-types";
+
+type Phase = "draft" | "creating" | "created";
 
 export default function QRGenerator() {
   const [text, setText] = useState("https://qr-generator-steel-beta.vercel.app/");
   const [foregroundColor, setForegroundColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [logoImage, setLogoImage] = useState("/kichoto.png");
+
+  const [phase, setPhase] = useState<Phase>("draft");
+  const [created, setCreated] = useState<CreateQrResponse | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<"redirect" | "edit" | null>(null);
 
   const ref = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
@@ -67,11 +77,10 @@ export default function QRGenerator() {
     }
   }, []); // Run only once on mount
 
-  // Update when text or colors change
+  // Style/logo changes never touch `data` — they apply in draft and created phases alike
   useEffect(() => {
     if (qrCode.current) {
       qrCode.current.update({
-        data: text,
         image: logoImage,
         dotsOptions: { type: "rounded", color: foregroundColor },
         backgroundOptions: { color: backgroundColor },
@@ -79,9 +88,52 @@ export default function QRGenerator() {
         cornersDotOptions: { type: "square", color: foregroundColor }
       });
     }
-  }, [text, foregroundColor, backgroundColor, logoImage]);
+  }, [foregroundColor, backgroundColor, logoImage]);
+
+  // Live "what will this look like" preview — only before the QR is actually created
+  useEffect(() => {
+    if (qrCode.current && phase === "draft") {
+      qrCode.current.update({ data: text });
+    }
+  }, [text, phase]);
+
+  // Once created, the QR permanently encodes the redirect URL — never the raw destination again
+  useEffect(() => {
+    if (qrCode.current && created) {
+      qrCode.current.update({ data: created.redirectUrl });
+    }
+  }, [created]);
 
   const downloadPNG = () => qrCode.current?.download({ name: "qreternal", extension: "png" });
+
+  const handleCreate = async () => {
+    setCreateError(null);
+    setPhase("creating");
+    const result = await createDynamicQr(text);
+    if (result.ok) {
+      setCreated(result.data);
+      setPhase("created");
+    } else {
+      setCreateError(result.message);
+      setPhase("draft");
+    }
+  };
+
+  const handleReset = () => {
+    setCreated(null);
+    setCreateError(null);
+    setPhase("draft");
+  };
+
+  const copyToClipboard = async (value: string, field: "redirect" | "edit") => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField((current) => (current === field ? null : current)), 1500);
+    } catch {
+      // Clipboard API unavailable (e.g. insecure context) — the value is still selectable/readable in the field
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans card">
@@ -89,7 +141,7 @@ export default function QRGenerator() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="text-center">
-            
+
             <p className="text-sm text-gray-500 mt-1 font-sans title">Générez des <span className="title1">QR Codes</span> <br /> Dynamiques et Intemporels</p>
           </div>
         </div>
@@ -98,9 +150,9 @@ export default function QRGenerator() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-xl shadow-sm p-8">
-          
+
           {/* URL Input */}
-          <div className="mb-8 text-center">`
+          <div className="mb-8 text-center">
             <label className="block text-sm font-medium text-gray-700 mb-2 font-p">
               Entrez votre URL
             </label>
@@ -108,10 +160,65 @@ export default function QRGenerator() {
               type="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
+              readOnly={phase === "created"}
               placeholder="https://votre-site-web.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-center"
+              className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-center ${phase === "created" ? "bg-gray-100 text-gray-500" : ""}`}
             />
+
+            {phase !== "created" && (
+              <>
+                {createError && (
+                  <p className="text-red-600 text-sm mt-3">{createError}</p>
+                )}
+                <button
+                  onClick={handleCreate}
+                  disabled={phase === "creating" || !isValidDestinationUrl(text)}
+                  className="mt-4 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {phase === "creating" ? "Création…" : "Créer mon QR code dynamique"}
+                </button>
+              </>
+            )}
           </div>
+
+          {phase === "created" && created && (
+            <div className="mb-8 p-4 rounded-lg bg-green-50 border border-green-200">
+              <p className="text-sm font-medium text-green-800 mb-3">
+                QR code créé ! Il ne changera plus jamais visuellement — seule sa destination peut être modifiée.
+              </p>
+
+              <label className="block text-xs font-medium text-gray-600 mb-1">Lien encodé par le QR code</label>
+              <div className="flex gap-2 mb-4">
+                <input readOnly value={created.redirectUrl} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" />
+                <button
+                  onClick={() => copyToClipboard(created.redirectUrl, "redirect")}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
+                >
+                  {copiedField === "redirect" ? "Copié !" : "Copier"}
+                </button>
+              </div>
+
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Lien secret de modification — enregistrez-le maintenant, il ne sera plus jamais réaffiché
+              </label>
+              <div className="flex gap-2">
+                <input readOnly value={created.editUrl} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" />
+                <button
+                  onClick={() => copyToClipboard(created.editUrl, "edit")}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
+                >
+                  {copiedField === "edit" ? "Copié !" : "Copier"}
+                </button>
+              </div>
+
+              <button
+                onClick={handleReset}
+                className="mt-4 text-sm text-blue-600 hover:underline"
+              >
+                Créer un nouveau QR code
+              </button>
+            </div>
+          )}
 
           {/* Color Controls */}
           <div className="mb-8 text-center">
@@ -167,14 +274,21 @@ export default function QRGenerator() {
           {/* QR Code Preview */}
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Aperçu en temps réel</h2>
-            
+
             <div className="bg-gray-50 rounded-xl p-8 mb-6 inline-block">
               <div
                 ref={ref}
                 className="flex justify-center w-[280px] h-[280px] [&>canvas]:w-full [&>canvas]:h-full [&>svg]:w-full [&>svg]:h-full"
               />
             </div>
-            <p className="text-xs text-gray-400 mb-2">Export haute résolution (1000x1000px) prêt pour l'impression</p>
+            {phase === "draft" && (
+              <p className="text-xs text-gray-400 mb-2">
+                Aperçu — le motif final encodera un lien court permanent une fois le QR créé. Export haute résolution (1000x1000px) prêt pour l'impression.
+              </p>
+            )}
+            {phase !== "draft" && (
+              <p className="text-xs text-gray-400 mb-2">Export haute résolution (1000x1000px) prêt pour l'impression</p>
+            )}
 
             {/* Download Button under QR code */}
             <div className="flex gap-3 justify-center">
