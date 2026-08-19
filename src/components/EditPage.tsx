@@ -15,6 +15,7 @@ export default function EditPage({ id }: EditPageProps) {
   const [errorMessage, setErrorMessage] = useState("Lien de modification invalide : jeton manquant.");
   const [destination, setDestination] = useState("");
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [scanCount, setScanCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -23,6 +24,7 @@ export default function EditPage({ id }: EditPageProps) {
       if (cancelled) return;
       if (result.ok) {
         setDestination(result.data.destinationUrl);
+        setScanCount(result.data.scanCount);
         setStatus("ready");
       } else {
         setErrorMessage(result.message);
@@ -41,6 +43,7 @@ export default function EditPage({ id }: EditPageProps) {
     if (result.ok) {
       setDestination(result.data.destinationUrl);
       setSavedAt(result.data.updatedAt);
+      setScanCount(result.data.scanCount);
       setStatus("ready");
     } else {
       setErrorMessage(result.message);
@@ -72,6 +75,12 @@ export default function EditPage({ id }: EditPageProps) {
 
             {(status === "ready" || status === "saving") && (
               <div>
+                {scanCount !== null && (
+                  <p className="text-center text-sm text-gray-500 mb-6">
+                    <span className="text-2xl font-semibold text-gray-900">{scanCount}</span>
+                    {" "}scan{scanCount !== 1 ? "s" : ""} depuis la création
+                  </p>
+                )}
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nouvelle destination
                 </label>

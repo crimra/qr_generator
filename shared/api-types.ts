@@ -10,6 +10,7 @@ export interface QrDetailsResponse {
   destinationUrl: string;
   createdAt: number;
   updatedAt: number;
+  scanCount: number;
 }
 
 export type ApiErrorCode =

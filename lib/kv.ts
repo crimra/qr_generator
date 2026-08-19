@@ -40,5 +40,9 @@ export const kv = isKvConfigured()
         const client = await getClient();
         return (await client.exists(key)) === 1;
       },
+      async incr(key: string): Promise<number> {
+        const client = await getClient();
+        return client.incr(key);
+      },
     }
   : null;

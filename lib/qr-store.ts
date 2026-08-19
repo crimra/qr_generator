@@ -6,3 +6,4 @@ export interface QrRecord {
 }
 
 export const qrKey = (id: string) => `qr:${id}`;
+export const scanKey = (id: string) => `scan:${id}`;

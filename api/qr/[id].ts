@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { isKvConfigured, kv } from "../../lib/kv.js";
-import { qrKey, type QrRecord } from "../../lib/qr-store.js";
+import { qrKey, scanKey, type QrRecord } from "../../lib/qr-store.js";
 import { verifyToken } from "../../lib/token.js";
 import { normalizeAndValidateUrl } from "../../lib/validate-url.js";
 import type { ApiErrorResponse, QrDetailsResponse } from "../../shared/api-types.js";
@@ -29,11 +29,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!verifyToken(token, record.tokenHash)) {
       return res.status(401).json({ error: "INVALID_TOKEN" } satisfies ApiErrorResponse);
     }
+    const scanCount = (await kv.get<number>(scanKey(id))) ?? 0;
     const response: QrDetailsResponse = {
       id,
       destinationUrl: record.destinationUrl,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      scanCount,
     };
     return res.status(200).json(response);
   }
@@ -57,11 +59,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
   await kv.set(qrKey(id), updated);
 
+  const scanCount = (await kv.get<number>(scanKey(id))) ?? 0;
   const response: QrDetailsResponse = {
     id,
     destinationUrl: updated.destinationUrl,
     createdAt: updated.createdAt,
     updatedAt: updated.updatedAt,
+    scanCount,
   };
   return res.status(200).json(response);
 }
